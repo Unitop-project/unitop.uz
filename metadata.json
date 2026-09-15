@@ -1,0 +1,6 @@
+{
+  "name": "UniTopuz",
+  "description": "2026-yil o'tish ballari asosida O'zbekiston universitetlari, yo'nalishlar, testlar va AI konsultant platformasi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
