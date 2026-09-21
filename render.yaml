@@ -3,7 +3,7 @@ services:
     name: unitopuz
     runtime: node
     buildCommand: npm install && npm run build
-    startCommand: node .output/server/index.mjs
+    startCommand: node start.mjs
     envVars:
       - key: NITRO_PRESET
         value: node-server
