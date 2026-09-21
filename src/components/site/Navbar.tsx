@@ -2,46 +2,41 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Menu,
-  GraduationCap,
   Home,
   Building2,
   Layers,
   Calculator,
-  FileText,
-  BookOpen,
   User,
-  Heart,
   Map,
-  Trophy,
-  Scale,
-  ShieldCheck,
-  Bot,
+  Sun,
+  Moon,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Logo } from "@/components/site/Logo";
-import { openUniTopChat } from "@/lib/chat";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
+import { useTheme } from "next-themes";
 
 const mainNav = [
-  { to: "/", label: "Bosh sahifa", icon: Home },
-  { to: "/universities", label: "Universitetlar", icon: Building2 },
-  { to: "/programs", label: "Yo'nalishlar", icon: Layers },
-  { to: "/calculator", label: "Ballimni tekshirish", icon: Calculator },
-  { to: "/tests", label: "Testlar", icon: FileText },
-  { to: "/materials", label: "Materiallar", icon: BookOpen },
+  { to: "/", labelKey: "nav.home" as const, icon: Home },
+  { to: "/universities", labelKey: "nav.universities" as const, icon: Building2 },
+  { to: "/programs", labelKey: "nav.programs" as const, icon: Layers },
+  { to: "/calculator", labelKey: "nav.calculator" as const, icon: Calculator },
 ] as const;
 
 const extraNav = [
-  { to: "/dashboard", label: "Kabinet", icon: User },
-  { to: "/saved", label: "Mening universitetlarim", icon: Heart },
-  { to: "/compare", label: "Taqqoslash", icon: Scale },
-  { to: "/roadmap", label: "Yo'l xaritasi", icon: Map },
-  { to: "/leaderboard", label: "Reyting", icon: Trophy },
-  { to: "/admin", label: "Admin panel", icon: ShieldCheck },
+  { to: "/dashboard", labelKey: "nav.profile" as const, icon: User },
+  { to: "/roadmap", labelKey: "footer.roadmap" as const, icon: Map },
 ] as const;
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const { t } = useI18n();
+  const { user, isAuthenticated, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/85 backdrop-blur">
@@ -58,50 +53,87 @@ export function Navbar() {
               className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               activeProps={{ className: "bg-secondary text-foreground" }}
             >
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           ))}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <LanguageSwitcher />
           <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => openUniTopChat()}
-            className="flex items-center gap-1.5 border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 text-xs sm:text-sm font-medium"
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={theme === "dark" ? "Light mode" : "Dark mode"}
+            className="hidden sm:flex"
           >
-            <Bot className="size-4 text-emerald-600 dark:text-emerald-400" />
-            <span>AI Konsultant</span>
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
           </Button>
 
-          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-            <Link to="/auth">Kirish</Link>
-          </Button>
-          <Button asChild size="sm" className="hidden sm:inline-flex">
-            <Link to="/dashboard">Profil</Link>
-          </Button>
+          {isAuthenticated ? (
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 rounded-lg border border-border/60 px-2 py-1.5 transition-colors hover:bg-secondary"
+              >
+                {user?.photoUrl ? (
+                  <img
+                    src={user.photoUrl}
+                    alt={user.name}
+                    className="size-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    {user?.name?.charAt(0) || "U"}
+                  </div>
+                )}
+                <span className="max-w-[100px] truncate text-sm font-medium">
+                  {user?.name || "Profil"}
+                </span>
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                className="size-8 text-muted-foreground hover:text-destructive"
+                aria-label={t("auth.logout")}
+              >
+                <LogOut className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button asChild size="sm" className="hidden sm:inline-flex">
+              <Link to="/login">{t("auth.login")}</Link>
+            </Button>
+          )}
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="lg:hidden" aria-label="Menyu">
+              <Button
+                variant="outline"
+                size="icon"
+                className="lg:hidden"
+                aria-label={t("nav.menu")}
+              >
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto">
-              <SheetTitle className="px-1 text-base">Menyu</SheetTitle>
+              <SheetTitle className="px-1 text-base">{t("nav.menu")}</SheetTitle>
               <div className="mt-4 flex flex-col gap-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpen(false);
-                    openUniTopChat();
-                  }}
-                  className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/15 transition text-left"
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="justify-start"
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  aria-label={t("nav.theme")}
                 >
-                  <Bot className="size-4 text-emerald-600 dark:text-emerald-400" />
-                  UniTop AI Maslahatchi
-                </button>
+                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="ml-3 text-sm font-medium">{t("nav.theme")}</span>
+                </Button>
 
                 {[...mainNav, ...extraNav].map((item) => (
                   <Link
@@ -112,16 +144,48 @@ export function Navbar() {
                     activeProps={{ className: "bg-secondary text-foreground" }}
                   >
                     <item.icon className="size-4" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </Link>
                 ))}
-                <Link
-                  to="/auth"
-                  onClick={() => setOpen(false)}
-                  className="mt-2 flex items-center gap-3 rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground"
-                >
-                  <User className="size-4" /> Kirish / Ro'yxatdan o'tish
-                </Link>
+
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setOpen(false)}
+                      className="mt-2 flex items-center gap-3 rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground"
+                    >
+                      {user?.photoUrl ? (
+                        <img
+                          src={user.photoUrl}
+                          alt={user.name}
+                          className="size-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <User className="size-4" />
+                      )}
+                      {user?.name || t("nav.profile")}
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setOpen(false);
+                      }}
+                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-destructive hover:bg-destructive/10"
+                    >
+                      <LogOut className="size-4" />
+                      {t("auth.logout")}
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setOpen(false)}
+                    className="mt-2 flex items-center gap-3 rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground"
+                  >
+                    <User className="size-4" /> {t("auth.login")}
+                  </Link>
+                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -132,17 +196,17 @@ export function Navbar() {
 }
 
 export function MobileTabBar() {
+  const { t } = useI18n();
   const items = [
-    { to: "/", label: "Bosh", icon: Home },
-    { to: "/calculator", label: "Ball", icon: Calculator },
-    { to: "/tests", label: "Testlar", icon: FileText },
-    { to: "/universities", label: "OTM", icon: Building2 },
-    { to: "/dashboard", label: "Profil", icon: User },
+    { to: "/", labelKey: "mob.home" as const, icon: Home },
+    { to: "/calculator", labelKey: "mob.score" as const, icon: Calculator },
+    { to: "/universities", labelKey: "mob.unis" as const, icon: Building2 },
+    { to: "/dashboard", labelKey: "mob.profile" as const, icon: User },
   ] as const;
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur md:hidden">
-      <div className="mx-auto grid max-w-lg grid-cols-5">
+      <div className="mx-auto grid max-w-lg grid-cols-4">
         {items.map((item) => (
           <Link
             key={item.to}
@@ -152,7 +216,7 @@ export function MobileTabBar() {
             activeOptions={{ exact: item.to === "/" }}
           >
             <item.icon className="size-5" />
-            {item.label}
+            {t(item.labelKey)}
           </Link>
         ))}
       </div>

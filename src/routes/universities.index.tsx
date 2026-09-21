@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Building2, Heart, MapPin, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building2, ExternalLink, MapPin, Search, Scale, Trophy } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,10 +11,38 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DATA_YEAR, programs, regions, universities } from "@/data/demo";
-import { maxScoreOf, minScoreOf, programsOf } from "@/lib/admission";
+import { programsOf } from "@/lib/admission";
 import { useCompare, useSaved } from "@/lib/store";
 import { DemoBadge } from "@/components/site/ChanceBadge";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+
+const GRADIENTS = [
+  "from-blue-600 to-blue-800",
+  "from-emerald-600 to-emerald-800",
+  "from-violet-600 to-violet-800",
+  "from-rose-600 to-rose-800",
+  "from-amber-600 to-amber-800",
+  "from-cyan-600 to-cyan-800",
+  "from-indigo-600 to-indigo-800",
+  "from-teal-600 to-teal-800",
+  "from-fuchsia-600 to-fuchsia-800",
+  "from-orange-600 to-orange-800",
+];
+
+function getGradient(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+  }
+  return GRADIENTS[Math.abs(hash) % GRADIENTS.length];
+}
+
+function getDirections(universityId: string): string {
+  const progs = programsOf(universityId);
+  const names = progs.slice(0, 3).map((p) => p.name);
+  return names.join(" · ");
+}
 
 export const Route = createFileRoute("/universities/")({
   head: () => ({
@@ -36,6 +64,7 @@ export const Route = createFileRoute("/universities/")({
 });
 
 function UniversitiesPage() {
+  const { t } = useI18n();
   const [q, setQ] = useState("");
   const [region, setRegion] = useState("all");
   const [saved, setSaved] = useSaved();
@@ -59,9 +88,9 @@ function UniversitiesPage() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-extrabold">Universitetlar</h1>
+          <h1 className="text-3xl font-extrabold">{t("uni.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {DATA_YEAR}-yil o'tish ballari bilan universitet katalogi
+            {t("uni.subtitle", { year: DATA_YEAR })}
           </p>
         </div>
         <DemoBadge />
@@ -73,17 +102,17 @@ function UniversitiesPage() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Universitet yoki yo'nalish qidiring..."
+            placeholder={t("uni.search")}
             className="h-12 pl-9"
           />
         </div>
         <div className="sm:w-56">
           <Select value={region} onValueChange={setRegion}>
             <SelectTrigger className="h-12">
-              <SelectValue placeholder="Hudud" />
+              <SelectValue placeholder={t("uni.region")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Barcha hududlar</SelectItem>
+              <SelectItem value="all">{t("uni.allRegions")}</SelectItem>
               {regions.map((r) => (
                 <SelectItem key={r} value={r}>
                   {r}
@@ -94,64 +123,161 @@ function UniversitiesPage() {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((u) => {
-          const min = minScoreOf(u.id);
-          const max = maxScoreOf(u.id);
           const isSaved = saved.includes(u.id);
           const inCompare = compare.includes(u.id);
+          const directions = getDirections(u.id);
+          const programCount = programsOf(u.id).length;
           return (
-            <article key={u.id} className="surface-card flex flex-col p-5">
-              <div className="flex items-start gap-3">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-navy text-sm font-bold text-navy-foreground">
-                  {u.short.slice(0, 4)}
-                </span>
-                <div className="min-w-0">
-                  <h2 className="text-sm font-bold leading-snug">{u.name}</h2>
-                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="size-3" /> {u.region}
-                  </p>
+            <article
+              key={u.id}
+              className="group overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-shadow hover:shadow-md"
+            >
+              {/* Image area */}
+              <div className="relative flex h-52 items-center justify-center overflow-hidden bg-white p-6">
+                {u.photo ? (
+                  <img
+                    src={u.photo}
+                    alt={u.name}
+                    className="max-h-full w-full object-contain"
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = "none";
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.classList.remove("bg-white");
+                        parent.classList.add("bg-gradient-to-br");
+                        const gradient = getGradient(u.id) ?? "from-blue-600 to-blue-800";
+                        gradient.split(" ").forEach((c) => parent.classList.add(c));
+                        const fallback = document.createElement("div");
+                        fallback.className = "absolute inset-0 flex items-center justify-center";
+                        fallback.innerHTML = `<span class="text-5xl font-extrabold text-white/20">${u.short}</span>`;
+                        parent.appendChild(fallback);
+                      }
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div className={cn("absolute inset-0 bg-gradient-to-br", getGradient(u.id))} />
+                    <span className="relative text-5xl font-extrabold text-white/20">
+                      {u.short}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="p-5">
+                {/* Type tag + action icons */}
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <Building2 className="size-3" />
+                    {u.type === "davlat"
+                      ? t("uni.state")
+                      : u.type === "xorijiy"
+                        ? t("uni.foreign")
+                        : t("uni.private")}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() =>
+                        setCompare((prev) =>
+                          prev.includes(u.id)
+                            ? prev.filter((x) => x !== u.id)
+                            : [...prev, u.id].slice(-4),
+                        )
+                      }
+                      aria-label={t("uni.compareAria")}
+                      className={cn(
+                        "flex size-8 items-center justify-center rounded-lg border border-border transition-colors",
+                        inCompare
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted",
+                      )}
+                    >
+                      <Scale className="size-4" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setSaved((prev) =>
+                          prev.includes(u.id) ? prev.filter((x) => x !== u.id) : [...prev, u.id],
+                        )
+                      }
+                      aria-label={t("uni.saveAria")}
+                      className={cn(
+                        "flex size-8 items-center justify-center rounded-lg border border-border transition-colors",
+                        isSaved
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted",
+                      )}
+                    >
+                      <Bookmark className={cn("size-4", isSaved && "fill-current")} />
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={() =>
-                    setSaved((prev) =>
-                      prev.includes(u.id) ? prev.filter((x) => x !== u.id) : [...prev, u.id],
-                    )
-                  }
-                  aria-label="Saqlash"
-                  className={cn(
-                    "ml-auto flex size-9 shrink-0 items-center justify-center rounded-lg border border-border",
-                    isSaved ? "bg-primary/10 text-primary" : "text-muted-foreground",
+
+                {/* Name */}
+                <h2 className="mt-3 text-lg font-bold leading-snug line-clamp-2">{u.name}</h2>
+
+                {/* Location */}
+                <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <MapPin className="size-3.5 shrink-0" />
+                  {u.region}
+                </p>
+
+                {/* Ranking */}
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Trophy className="size-3.5 shrink-0" />
+                  {t("uni.directions", { n: programCount })}
+                </p>
+
+                {/* Strong directions */}
+                {directions && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    <span className="font-semibold text-foreground">{t("uni.strong")} </span>
+                    {directions}
+                  </p>
+                )}
+
+                {/* Buttons */}
+                <div className="mt-5 flex gap-3">
+                  {u.website ? (
+                    <a
+                      href={`https://${u.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-primary bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M2 12h20" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      {t("uni.site")}
+                    </a>
+                  ) : (
+                    <span className="flex-1" />
                   )}
-                >
-                  <Heart className={cn("size-4", isSaved && "fill-current")} />
-                </button>
-              </div>
-
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                <Mini label="Yo'nalish" value={String(programsOf(u.id).length)} />
-                <Mini label="Eng past ball" value={min ? min.toFixed(1) : "-"} />
-                <Mini label="Eng yuqori" value={max ? max.toFixed(1) : "-"} />
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <Button asChild className="flex-1">
-                  <Link to="/universities/$id" params={{ id: u.id }}>
-                    Batafsil
+                  <Link
+                    to="/universities/$id"
+                    params={{ id: u.id }}
+                    className="inline-flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted/80"
+                  >
+                    {t("uni.details")}
+                    <ExternalLink className="size-3.5" />
                   </Link>
-                </Button>
-                <Button
-                  variant={inCompare ? "secondary" : "outline"}
-                  onClick={() =>
-                    setCompare((prev) =>
-                      prev.includes(u.id)
-                        ? prev.filter((x) => x !== u.id)
-                        : [...prev, u.id].slice(-4),
-                    )
-                  }
-                >
-                  {inCompare ? "Tanlandi" : "Taqqoslash"}
-                </Button>
+                </div>
               </div>
             </article>
           );
@@ -161,18 +287,9 @@ function UniversitiesPage() {
       {list.length === 0 && (
         <div className="surface-card mt-8 flex flex-col items-center gap-2 p-12 text-center">
           <Building2 className="size-6 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Hech narsa topilmadi.</p>
+          <p className="text-sm text-muted-foreground">{t("uni.empty")}</p>
         </div>
       )}
-    </div>
-  );
-}
-
-function Mini({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-muted/60 p-2">
-      <div className="text-sm font-bold">{value}</div>
-      <div className="text-[10px] text-muted-foreground">{label}</div>
     </div>
   );
 }

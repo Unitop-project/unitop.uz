@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="95" fill="#1e3a5f"/>
+  <circle cx="100" cy="100" r="85" fill="#2196F3"/>
+  <text x="100" y="90" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">NMTI</text>
+  <text x="100" y="120" font-family="Arial" font-size="10" fill="white" text-anchor="middle">Namangan</text>
+</svg>

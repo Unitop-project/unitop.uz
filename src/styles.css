@@ -62,7 +62,7 @@
   --card-foreground: oklch(0.22 0.05 258);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.22 0.05 258);
-  --primary: oklch(0.52 0.18 258);
+  --primary: oklch(0.556 0.132 162);
   --primary-foreground: oklch(0.99 0.005 250);
   --secondary: oklch(0.955 0.012 250);
   --secondary-foreground: oklch(0.28 0.06 258);
@@ -74,26 +74,26 @@
   --destructive-foreground: oklch(0.99 0.005 250);
   --border: oklch(0.915 0.012 250);
   --input: oklch(0.915 0.012 250);
-  --ring: oklch(0.52 0.18 258);
+  --ring: oklch(0.556 0.132 162);
   --navy: oklch(0.24 0.07 262);
   --navy-foreground: oklch(0.97 0.01 250);
   --success: oklch(0.58 0.14 155);
   --success-foreground: oklch(0.99 0.005 250);
   --warning: oklch(0.72 0.15 75);
   --warning-foreground: oklch(0.22 0.05 258);
-  --chart-1: oklch(0.52 0.18 258);
+  --chart-1: oklch(0.556 0.132 162);
   --chart-2: oklch(0.58 0.14 155);
   --chart-3: oklch(0.72 0.15 75);
   --chart-4: oklch(0.58 0.21 25);
   --chart-5: oklch(0.45 0.1 280);
   --sidebar: oklch(0.99 0.004 250);
   --sidebar-foreground: oklch(0.22 0.05 258);
-  --sidebar-primary: oklch(0.52 0.18 258);
+  --sidebar-primary: oklch(0.556 0.132 162);
   --sidebar-primary-foreground: oklch(0.99 0.005 250);
   --sidebar-accent: oklch(0.95 0.015 250);
   --sidebar-accent-foreground: oklch(0.28 0.06 258);
   --sidebar-border: oklch(0.915 0.012 250);
-  --sidebar-ring: oklch(0.52 0.18 258);
+  --sidebar-ring: oklch(0.556 0.132 162);
 }
 
 .dark {
@@ -103,8 +103,8 @@
   --card-foreground: oklch(0.97 0.01 250);
   --popover: oklch(0.235 0.05 262);
   --popover-foreground: oklch(0.97 0.01 250);
-  --primary: oklch(0.65 0.16 255);
-  --primary-foreground: oklch(0.18 0.05 262);
+  --primary: oklch(0.78 0.14 163);
+  --primary-foreground: oklch(0.16 0.04 262);
   --secondary: oklch(0.28 0.05 262);
   --secondary-foreground: oklch(0.97 0.01 250);
   --muted: oklch(0.28 0.05 262);
@@ -115,7 +115,7 @@
   --destructive-foreground: oklch(0.99 0.005 250);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.65 0.16 255);
+  --ring: oklch(0.78 0.14 163);
   --navy: oklch(0.16 0.04 262);
   --navy-foreground: oklch(0.97 0.01 250);
   --success: oklch(0.68 0.14 155);
@@ -124,12 +124,12 @@
   --warning-foreground: oklch(0.18 0.05 262);
   --sidebar: oklch(0.21 0.05 262);
   --sidebar-foreground: oklch(0.97 0.01 250);
-  --sidebar-primary: oklch(0.65 0.16 255);
-  --sidebar-primary-foreground: oklch(0.18 0.05 262);
+  --sidebar-primary: oklch(0.78 0.14 163);
+  --sidebar-primary-foreground: oklch(0.16 0.04 262);
   --sidebar-accent: oklch(0.28 0.05 262);
   --sidebar-accent-foreground: oklch(0.97 0.01 250);
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.65 0.16 255);
+  --sidebar-ring: oklch(0.78 0.14 163);
 }
 
 @layer base {
@@ -162,4 +162,91 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
+}
+
+@utility surface-glass {
+  background-color: color-mix(in oklch, var(--color-card) 70%, transparent);
+  border: 1px solid color-mix(in oklch, var(--color-border) 50%, transparent);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(20px) saturate(1.5);
+  box-shadow: var(--shadow-card);
+}
+
+@utility text-gradient {
+  background: linear-gradient(135deg, var(--color-primary), oklch(0.65 0.14 155));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility animate-fade-up {
+  animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) blur(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }

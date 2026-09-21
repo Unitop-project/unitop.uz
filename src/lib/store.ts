@@ -49,6 +49,9 @@ export interface UserProfile {
   currentScore: number;
   examDate: string;
   streak: number;
+  address: string;
+  photoUrl: string;
+  dreamUniversities: string[];
 }
 
 export const DEFAULT_PROFILE: UserProfile = {
@@ -58,6 +61,9 @@ export const DEFAULT_PROFILE: UserProfile = {
   currentScore: 142,
   examDate: "",
   streak: 6,
+  address: "",
+  photoUrl: "",
+  dreamUniversities: [],
 };
 
 export interface AttemptRecord {

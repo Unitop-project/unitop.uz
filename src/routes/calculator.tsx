@@ -16,6 +16,7 @@ import { DATA_YEAR, regions } from "@/data/demo";
 import { DEFAULT_PREFERENCES, combinations, type CalculatorPreferences } from "@/lib/admission";
 import { useLocalState } from "@/lib/store";
 import { Disclaimer } from "@/components/site/ChanceBadge";
+import { formatKeys, langKeys, typeKeys, useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/calculator")({
   head: () => ({
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/calculator")({
 
 function CalculatorPage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [saved, setSaved] = useLocalState<CalculatorPreferences>("ut_prefs", DEFAULT_PREFERENCES);
   const [form, setForm] = useState<CalculatorPreferences>(saved);
 
@@ -57,17 +59,15 @@ function CalculatorPage() {
           <CalcIcon className="size-5" />
         </span>
         <div>
-          <h1 className="text-3xl font-extrabold">Ballingizni tekshiring</h1>
-          <p className="text-sm text-muted-foreground">
-            {DATA_YEAR}-yilgi o'tish ballari bilan taqqoslash
-          </p>
+          <h1 className="text-3xl font-extrabold">{t("calc.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("calc.subtitle", { year: DATA_YEAR })}</p>
         </div>
       </div>
 
       <form onSubmit={submit} className="surface-card mt-8 space-y-7 p-6 sm:p-8">
         <div>
           <Label htmlFor="score" className="text-base font-semibold">
-            To'plagan ball
+            {t("calc.scoreLabel")}
           </Label>
           <div className="mt-3 flex items-center gap-4">
             <Input
@@ -90,20 +90,20 @@ function CalculatorPage() {
               />
               <div className="mt-2 flex justify-between text-xs text-muted-foreground">
                 <span>0</span>
-                <span>Maksimal 189.0</span>
+                <span>{t("calc.max")}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Fanlar majmuasi">
+          <Field label={t("pr.combo")}>
             <Select value={form.combination} onValueChange={(v) => set("combination", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barchasi</SelectItem>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
                 {combinations.map((c) => (
                   <SelectItem key={c} value={c}>
                     {c}
@@ -113,43 +113,43 @@ function CalculatorPage() {
             </Select>
           </Field>
 
-          <Field label="Ta'lim tili">
+          <Field label={t("calc.lang")}>
             <Select value={form.language} onValueChange={(v) => set("language", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barchasi</SelectItem>
-                <SelectItem value="uzbek">O'zbek</SelectItem>
-                <SelectItem value="rus">Rus</SelectItem>
-                <SelectItem value="ingliz">Ingliz</SelectItem>
-                <SelectItem value="qoraqalpoq">Qoraqalpoq</SelectItem>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                <SelectItem value="uzbek">{t(langKeys.uzbek as never)}</SelectItem>
+                <SelectItem value="rus">{t(langKeys.rus as never)}</SelectItem>
+                <SelectItem value="ingliz">{t(langKeys.ingliz as never)}</SelectItem>
+                <SelectItem value="qoraqalpoq">{t(langKeys.qoraqalpoq as never)}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
 
-          <Field label="Ta'lim shakli">
+          <Field label={t("calc.format")}>
             <Select value={form.format} onValueChange={(v) => set("format", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barchasi</SelectItem>
-                <SelectItem value="kunduzgi">Kunduzgi</SelectItem>
-                <SelectItem value="sirtqi">Sirtqi</SelectItem>
-                <SelectItem value="kechki">Kechki</SelectItem>
-                <SelectItem value="masofaviy">Masofaviy</SelectItem>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                <SelectItem value="kunduzgi">{t(formatKeys.kunduzgi as never)}</SelectItem>
+                <SelectItem value="sirtqi">{t(formatKeys.sirtqi as never)}</SelectItem>
+                <SelectItem value="kechki">{t(formatKeys.kechki as never)}</SelectItem>
+                <SelectItem value="masofaviy">{t(formatKeys.masofaviy as never)}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
 
-          <Field label="Hudud">
+          <Field label={t("pr.region")}>
             <Select value={form.region} onValueChange={(v) => set("region", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barchasi</SelectItem>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
                 {regions.map((r) => (
                   <SelectItem key={r} value={r}>
                     {r}
@@ -159,36 +159,36 @@ function CalculatorPage() {
             </Select>
           </Field>
 
-          <Field label="Grant / Kontrakt">
+          <Field label={t("pr.type")}>
             <Select value={form.admissionType} onValueChange={(v) => set("admissionType", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barchasi</SelectItem>
-                <SelectItem value="grant">Grant</SelectItem>
-                <SelectItem value="kontrakt">Kontrakt</SelectItem>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                <SelectItem value="grant">{t(typeKeys.grant as never)}</SelectItem>
+                <SelectItem value="kontrakt">{t(typeKeys.kontrakt as never)}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
 
-          <Field label="Universitet turi">
+          <Field label={t("calc.uniType")}>
             <Select value={form.universityType} onValueChange={(v) => set("universityType", v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barchasi</SelectItem>
-                <SelectItem value="davlat">Davlat</SelectItem>
-                <SelectItem value="xususiy">Xususiy</SelectItem>
-                <SelectItem value="xorijiy">Xorijiy</SelectItem>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                <SelectItem value="davlat">{t("uniType.davlat")}</SelectItem>
+                <SelectItem value="xususiy">{t("uniType.xususiy")}</SelectItem>
+                <SelectItem value="xorijiy">{t("uniType.xorijiy")}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
         </div>
 
         <Button type="submit" size="lg" className="h-12 w-full text-base">
-          Universitetlarni topish
+          {t("calc.submit")}
         </Button>
 
         <div className="flex items-start gap-2 rounded-lg bg-muted p-4">

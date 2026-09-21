@@ -14,9 +14,6 @@ import {
 import { DATA_YEAR, regions, universities } from "@/data/demo";
 import {
   DEFAULT_PREFERENCES,
-  FORMAT_LABEL,
-  LANGUAGE_LABEL,
-  TYPE_LABEL,
   admissionRows,
   combinations,
   getChance,
@@ -25,6 +22,7 @@ import {
 } from "@/lib/admission";
 import { useLocalState, useSaved } from "@/lib/store";
 import { ChanceBadge, DemoBadge, Disclaimer } from "@/components/site/ChanceBadge";
+import { formatKeys, langKeys, typeKeys, useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/results")({
@@ -49,6 +47,7 @@ export const Route = createFileRoute("/results")({
 type SortKey = "score" | "name" | "chance" | "closest";
 
 function ResultsPage() {
+  const { t } = useI18n();
   const [prefs] = useLocalState<CalculatorPreferences>("ut_prefs", DEFAULT_PREFERENCES);
   const [saved, setSaved] = useSaved();
   const [showFilters, setShowFilters] = useState(false);
@@ -100,93 +99,96 @@ function ResultsPage() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold">Natijalar</h1>
+          <h1 className="text-3xl font-extrabold">{t("res.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Sizning ballingiz: <span className="font-bold text-foreground">{userScore}</span> ·{" "}
-            {DATA_YEAR}-yil ma'lumotlari asosida
+            {t("res.myScore")}: <span className="font-bold text-foreground">{userScore}</span> ·{" "}
+            {t("res.yearInfo", { year: DATA_YEAR })}
           </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
-            <Link to="/calculator">Ballni o'zgartirish</Link>
+            <Link to="/calculator">{t("res.changeScore")}</Link>
           </Button>
           <Button variant="outline" onClick={() => setShowFilters((s) => !s)} className="lg:hidden">
-            <SlidersHorizontal className="size-4" /> Filtrlar
+            <SlidersHorizontal className="size-4" /> {t("res.filters")}
           </Button>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-3">
-        <StatCard label="Yuqori imkoniyat" value={counts.high} tone="success" />
-        <StatCard label="Real imkoniyat" value={counts.real} tone="warning" />
-        <StatCard label="Raqobat yuqori" value={counts.tough} tone="destructive" />
+        <StatCard label={t("res.high")} value={counts.high} tone="success" />
+        <StatCard label={t("res.real")} value={counts.real} tone="warning" />
+        <StatCard label={t("res.tough")} value={counts.tough} tone="destructive" />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
         <aside className={cn("space-y-4", showFilters ? "block" : "hidden lg:block")}>
           <div className="surface-card space-y-4 p-5">
             <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
-              Filtrlar
+              {t("res.filters")}
             </h2>
             <FilterSelect
-              label="Universitet"
+              label={t("pr.university")}
               value={uni}
               onChange={setUni}
               options={[
-                ["all", "Barchasi"],
+                ["all", t("common.all")],
                 ...universities.map((u) => [u.id, u.short] as [string, string]),
               ]}
             />
             <FilterSelect
-              label="Hudud"
+              label={t("pr.region")}
               value={region}
               onChange={setRegion}
-              options={[["all", "Barchasi"], ...regions.map((r) => [r, r] as [string, string])]}
+              options={[
+                ["all", t("common.all")],
+                ...regions.map((r) => [r, r] as [string, string]),
+              ]}
             />
             <FilterSelect
-              label="Yo'nalish majmuasi"
+              label={t("res.filterCombo")}
               value={combo}
               onChange={setCombo}
               options={[
-                ["all", "Barchasi"],
+                ["all", t("common.all")],
                 ...combinations.map((c) => [c, c] as [string, string]),
               ]}
             />
             <FilterSelect
-              label="Grant / Kontrakt"
+              label={t("pr.type")}
               value={type}
               onChange={setType}
               options={[
-                ["all", "Barchasi"],
-                ["grant", "Grant"],
-                ["kontrakt", "Kontrakt"],
+                ["all", t("common.all")],
+                ["grant", t(typeKeys.grant as never)],
+                ["kontrakt", t(typeKeys.kontrakt as never)],
               ]}
             />
             <FilterSelect
-              label="Ta'lim tili"
+              label={t("pr.lang")}
               value={lang}
               onChange={setLang}
               options={[
-                ["all", "Barchasi"],
-                ["uzbek", "O'zbek"],
-                ["rus", "Rus"],
-                ["ingliz", "Ingliz"],
+                ["all", t("common.all")],
+                ["uzbek", t(langKeys.uzbek as never)],
+                ["rus", t(langKeys.rus as never)],
+                ["ingliz", t(langKeys.ingliz as never)],
               ]}
             />
             <FilterSelect
-              label="Ta'lim shakli"
+              label={t("pr.format")}
               value={format}
               onChange={setFormat}
               options={[
-                ["all", "Barchasi"],
-                ["kunduzgi", "Kunduzgi"],
-                ["sirtqi", "Sirtqi"],
-                ["kechki", "Kechki"],
+                ["all", t("common.all")],
+                ["kunduzgi", t(formatKeys.kunduzgi as never)],
+                ["sirtqi", t(formatKeys.sirtqi as never)],
+                ["kechki", t(formatKeys.kechki as never)],
               ]}
             />
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs">Min ball</Label>
+                <Label className="text-xs">{t("res.minBall")}</Label>
                 <Input
                   value={minScore}
                   onChange={(e) => setMinScore(e.target.value)}
@@ -195,7 +197,7 @@ function ResultsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Max ball</Label>
+                <Label className="text-xs">{t("res.maxBall")}</Label>
                 <Input
                   value={maxScore}
                   onChange={(e) => setMaxScore(e.target.value)}
@@ -213,17 +215,17 @@ function ResultsPage() {
 
         <div>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">{rows.length} ta natija topildi</p>
+            <p className="text-sm text-muted-foreground">{t("res.count", { n: rows.length })}</p>
             <div className="w-56">
               <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="chance">Eng katta imkoniyat</SelectItem>
-                  <SelectItem value="closest">Eng yaqin o'tish bali</SelectItem>
-                  <SelectItem value="score">Ball bo'yicha</SelectItem>
-                  <SelectItem value="name">Universitet nomi</SelectItem>
+                  <SelectItem value="chance">{t("res.sortChance")}</SelectItem>
+                  <SelectItem value="closest">{t("res.sortClosest")}</SelectItem>
+                  <SelectItem value="score">{t("res.sortScore")}</SelectItem>
+                  <SelectItem value="name">{t("res.sortName")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -232,7 +234,7 @@ function ResultsPage() {
           <div className="mt-4 space-y-4">
             {rows.length === 0 && (
               <div className="surface-card p-10 text-center text-sm text-muted-foreground">
-                Tanlangan shartlar bo'yicha natija topilmadi. Filtrlarni yumshatib ko'ring.
+                {t("res.empty")}
               </div>
             )}
             {rows.map((r) => {
@@ -258,7 +260,7 @@ function ResultsPage() {
                       <ChanceBadge level={level} />
                       <button
                         onClick={() => toggleSave(r.university.id)}
-                        aria-label="Saqlash"
+                        aria-label={t("uni.saveAria")}
                         className={cn(
                           "flex size-9 items-center justify-center rounded-lg border border-border transition-colors",
                           isSaved
@@ -273,23 +275,25 @@ function ResultsPage() {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     <Metric
-                      label={`O'tgan yilgi o'tish bali (${r.score.year})`}
+                      label={t("res.yearScore", { year: r.score.year })}
                       value={r.score.score.toFixed(1)}
                     />
-                    <Metric label="Sizning ballingiz" value={userScore.toFixed(1)} />
+                    <Metric label={t("res.myScore")} value={userScore.toFixed(1)} />
                     <Metric
-                      label="Farq"
-                      value={`${r.difference > 0 ? "+" : ""}${r.difference.toFixed(1)} ball`}
+                      label={t("res.diff")}
+                      value={`${r.difference > 0 ? "+" : ""}${r.difference.toFixed(1)}`}
                       tone={r.difference >= 0 ? "success" : "destructive"}
                     />
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    <Chip>{TYPE_LABEL[r.score.admission_type]}</Chip>
-                    <Chip>{LANGUAGE_LABEL[r.score.education_language]} tili</Chip>
-                    <Chip>{FORMAT_LABEL[r.score.study_format]}</Chip>
+                    <Chip>{t(typeKeys[r.score.admission_type] as never)}</Chip>
+                    <Chip>
+                      {t("res.langT", { lang: t(langKeys[r.score.education_language] as never) })}
+                    </Chip>
+                    <Chip>{t(formatKeys[r.score.study_format] as never)}</Chip>
                     <Chip>{r.university.region}</Chip>
-                    <Chip>{r.score.year}-yil</Chip>
+                    <Chip>{t("res.year", { year: r.score.year })}</Chip>
                   </div>
                 </article>
               );

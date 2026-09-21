@@ -23,16 +23,7 @@ export function ChanceBadge({ level, className }: { level: ChanceLevel; classNam
 }
 
 export function DemoBadge({ className }: { className?: string }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground",
-        className,
-      )}
-    >
-      Demo ma'lumot
-    </span>
-  );
+  return null;
 }
 
 export function Disclaimer({ className }: { className?: string }) {

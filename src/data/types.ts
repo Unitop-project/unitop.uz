@@ -14,6 +14,8 @@ export interface University {
   type: "davlat" | "xususiy" | "xorijiy";
   about: string;
   website?: string;
+  photo?: string;
+  brandColor?: string;
 }
 
 export interface Program {
@@ -61,6 +63,11 @@ export interface Question {
   difficulty: "oson" | "o'rta" | "qiyin";
 }
 
+export interface FormulaSection {
+  title: string;
+  items: string[];
+}
+
 export interface Material {
   id: string;
   title: string;
@@ -70,6 +77,9 @@ export interface Material {
   difficulty: "boshlang'ich" | "o'rta" | "yuqori";
   format: string;
   description: string;
+  url?: string;
+  thumbnail?: string;
+  formulaSections?: FormulaSection[];
 }
 
 export interface LeaderboardEntry {

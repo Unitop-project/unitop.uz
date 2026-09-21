@@ -4,7 +4,7 @@ import { universities, programs, admissionScores, DATA_YEAR } from "../data/demo
 let aiClient: GoogleGenAI | null = null;
 
 function getAIClient(): GoogleGenAI | null {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) return null;
 
   if (!aiClient) {
@@ -128,15 +128,16 @@ export async function handleAIChat(messages: ChatMessage[]): Promise<string> {
 
   // Score evaluation (e.g. "140 ball bilan qayerga kirsa bo'ladi", "165 ball oldim", "110 ball")
   const scoreExtract = norm.match(/(\d{2,3}(?:\.\d+)?)\s*(?:ball|bal)?/);
+  const scoreStr = scoreExtract?.[1];
   if (
-    scoreExtract &&
+    scoreStr &&
     (norm.includes("ball") ||
       norm.includes("bal") ||
       norm.includes("kirsam") ||
       norm.includes("yetadimi") ||
       norm.includes("kirish"))
   ) {
-    const userScore = parseFloat(scoreExtract[1]);
+    const userScore = parseFloat(scoreStr);
     if (userScore >= 50 && userScore <= 189) {
       // Find programs around this score
       const grantMatches = admissionScores.filter(

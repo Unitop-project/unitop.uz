@@ -12,14 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DATA_YEAR, programs, regions, universities } from "@/data/demo";
-import {
-  FORMAT_LABEL,
-  LANGUAGE_LABEL,
-  combinations,
-  getUniversity,
-  scoresOf,
-} from "@/lib/admission";
+import { combinations, getUniversity, scoresOf } from "@/lib/admission";
 import { DemoBadge, Disclaimer } from "@/components/site/ChanceBadge";
+import { formatKeys, langKeys, typeKeys, useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/programs")({
   head: () => ({
@@ -41,6 +36,7 @@ export const Route = createFileRoute("/programs")({
 });
 
 function ProgramsPage() {
+  const { t } = useI18n();
   const [q, setQ] = useState("");
   const [combo, setCombo] = useState("all");
   const [uni, setUni] = useState("all");
@@ -69,9 +65,9 @@ function ProgramsPage() {
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-extrabold">Yo'nalishlar</h1>
+          <h1 className="text-3xl font-extrabold">{t("pr.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {DATA_YEAR}-yilgi o'tish ballari asosida yo'nalishlar qidiruvi
+            {t("pr.subtitle", { year: DATA_YEAR })}
           </p>
         </div>
         <DemoBadge />
@@ -83,68 +79,71 @@ function ProgramsPage() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Universitet yoki yo'nalish qidiring..."
+            placeholder={t("pr.search")}
             className="h-12 pl-9"
           />
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Pick
-            label="Fanlar majmuasi"
+            label={t("pr.combo")}
             value={combo}
             onChange={setCombo}
-            options={[["all", "Barchasi"], ...combinations.map((c) => [c, c] as [string, string])]}
+            options={[
+              ["all", t("common.all")],
+              ...combinations.map((c) => [c, c] as [string, string]),
+            ]}
           />
           <Pick
-            label="Universitet"
+            label={t("pr.university")}
             value={uni}
             onChange={setUni}
             options={[
-              ["all", "Barchasi"],
+              ["all", t("common.all")],
               ...universities.map((u) => [u.id, u.short] as [string, string]),
             ]}
           />
           <Pick
-            label="Hudud"
+            label={t("pr.region")}
             value={region}
             onChange={setRegion}
-            options={[["all", "Barchasi"], ...regions.map((r) => [r, r] as [string, string])]}
+            options={[["all", t("common.all")], ...regions.map((r) => [r, r] as [string, string])]}
           />
           <Pick
-            label="Ta'lim tili"
+            label={t("pr.lang")}
             value={lang}
             onChange={setLang}
             options={[
-              ["all", "Barchasi"],
-              ["uzbek", "O'zbek"],
-              ["rus", "Rus"],
-              ["ingliz", "Ingliz"],
+              ["all", t("common.all")],
+              ["uzbek", t(langKeys.uzbek as never)],
+              ["rus", t(langKeys.rus as never)],
+              ["ingliz", t(langKeys.ingliz as never)],
             ]}
           />
           <Pick
-            label="Grant / Kontrakt"
+            label={t("pr.type")}
             value={type}
             onChange={setType}
             options={[
-              ["all", "Barchasi"],
-              ["grant", "Grant"],
-              ["kontrakt", "Kontrakt"],
+              ["all", t("common.all")],
+              ["grant", t(typeKeys.grant as never)],
+              ["kontrakt", t(typeKeys.kontrakt as never)],
             ]}
           />
           <Pick
-            label="Ta'lim shakli"
+            label={t("pr.format")}
             value={format}
             onChange={setFormat}
             options={[
-              ["all", "Barchasi"],
-              ["kunduzgi", "Kunduzgi"],
-              ["sirtqi", "Sirtqi"],
-              ["kechki", "Kechki"],
+              ["all", t("common.all")],
+              ["kunduzgi", t(formatKeys.kunduzgi as never)],
+              ["sirtqi", t(formatKeys.sirtqi as never)],
+              ["kechki", t(formatKeys.kechki as never)],
             ]}
           />
         </div>
       </div>
 
-      <p className="mt-6 text-sm text-muted-foreground">{list.length} ta yo'nalish</p>
+      <p className="mt-6 text-sm text-muted-foreground">{t("pr.count", { n: list.length })}</p>
 
       <div className="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {list.map((p) => {
@@ -164,24 +163,24 @@ function ProgramsPage() {
               <p className="mt-3 text-xs text-muted-foreground">{p.subject_combination}</p>
               <div className="mt-3 rounded-lg bg-muted/60 p-3">
                 <div className="text-[11px] text-muted-foreground">
-                  Eng past o'tish bali ({DATA_YEAR})
+                  {t("pr.minScore", { year: DATA_YEAR })}
                 </div>
                 <div className="text-lg font-bold">{best ? best.toFixed(1) : "-"}</div>
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] text-muted-foreground">
                 {p.formats.map((f) => (
                   <span key={f} className="rounded-full bg-secondary px-2 py-0.5 font-medium">
-                    {FORMAT_LABEL[f]}
+                    {t(formatKeys[f] ?? (f as never))}
                   </span>
                 ))}
                 {p.languages.map((l) => (
                   <span key={l} className="rounded-full bg-secondary px-2 py-0.5 font-medium">
-                    {LANGUAGE_LABEL[l]}
+                    {t(langKeys[l] ?? (l as never))}
                   </span>
                 ))}
               </div>
               <Button asChild className="mt-4">
-                <Link to="/calculator">Ballim bilan tekshirish</Link>
+                <Link to="/calculator">{t("pr.check")}</Link>
               </Button>
             </article>
           );

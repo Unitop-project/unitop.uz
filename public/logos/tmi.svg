@@ -1,0 +1,6 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="95" fill="#0d1b2a"/>
+  <circle cx="100" cy="100" r="85" fill="#FFD700" stroke="#0d1b2a" stroke-width="3"/>
+  <text x="100" y="90" font-family="Arial" font-size="28" font-weight="bold" fill="#0d1b2a" text-anchor="middle">TMI</text>
+  <text x="100" y="120" font-family="Arial" font-size="10" fill="#0d1b2a" text-anchor="middle">1991</text>
+</svg>

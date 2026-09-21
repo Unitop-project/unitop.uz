@@ -15,22 +15,24 @@ import { Navbar, MobileTabBar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { AiChatbot } from "@/components/site/AiChatbot";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { I18nProvider, useI18n } from "@/lib/i18n";
+import { AuthProvider } from "@/lib/auth";
 
 function NotFoundComponent() {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-[70vh] items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Sahifa topilmadi</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Siz qidirayotgan sahifa mavjud emas yoki ko'chirilgan.
-        </p>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("nf.title")}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{t("nf.desc")}</p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Bosh sahifaga
+            {t("nf.home")}
           </Link>
         </div>
       </div>
@@ -41,6 +43,7 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
+  const { t } = useI18n();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
@@ -48,10 +51,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-[70vh] items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Sahifa yuklanmadi</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Nimadir xato ketdi. Sahifani yangilab ko'ring yoki bosh sahifaga qayting.
-        </p>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("err.title")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("err.desc")}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -60,13 +61,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Qayta urinish
+            {t("err.retry")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Bosh sahifa
+            {t("err.home")}
           </a>
         </div>
       </div>
@@ -112,7 +113,9 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <AuthProvider>
+          <I18nProvider>{children}</I18nProvider>
+        </AuthProvider>
         <Scripts />
       </body>
     </html>
@@ -121,19 +124,26 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { lang } = useI18n();
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col">
-        <Navbar />
-        <main className="flex-1 pb-20 md:pb-0">
-          <Outlet />
-        </main>
-        <Footer />
-        <MobileTabBar />
-        <AiChatbot />
-      </div>
-      <Toaster position="top-center" />
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <div className="flex min-h-screen flex-col">
+          <Navbar />
+          <main className="flex-1 pb-20 md:pb-0">
+            <Outlet />
+          </main>
+          <Footer />
+          <MobileTabBar />
+          {/* <AiChatbot /> */}
+        </div>
+        <Toaster position="top-center" />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

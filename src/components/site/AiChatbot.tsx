@@ -1,21 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Markdown from "react-markdown";
-import {
-  Bot,
-  X,
-  Send,
-  Sparkles,
-  RotateCcw,
-  Loader2,
-  ChevronDown,
-  MessageSquare,
-  Copy,
-  Check,
-  Phone,
-  HelpCircle,
-} from "lucide-react";
+import { Bot, X, Send, RotateCcw, Loader2, ChevronDown, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/site/Logo";
 import { DATA_YEAR } from "@/data/demo";
 
 export interface Message {
@@ -28,16 +14,15 @@ export interface Message {
 const INITIAL_MESSAGE: Message = {
   id: "welcome",
   role: "assistant",
-  content: `Assalomu alaykum! Men **UniTop AI** — Oliy ta'lim va abituriyentlar bo'yicha sun'iy intellekt maslahatchisiman. 🎓\n\nSizga quyidagilar bo'yicha yordam bera olaman:\n- **${DATA_YEAR}-yil o'tish ballari** (grant va kontrakt)\n- **Universitet va yo'nalishlar** tanlash (TATU, TDIU, O'zMU va h.k.)\n- **DTM test tizimi** va ball hisoblash mezonlari\n- Shuningdek har qanday savolingizga javob beraman!\n\nQanday savolingiz bor?`,
+  content: `Assalomu alaykum! Men **UniTop AI** maslahatchiman.\n\n${DATA_YEAR}-yil o'tish ballari, universitetlar va yo'nalishlar bo'yicha savollaringizga javob beraman.\n\nQanday savolingiz bor?`,
   timestamp: "Hozir",
 };
 
 const QUICK_PROMPTS = [
-  `${DATA_YEAR}-yil o'tish ballari qanday?`,
-  "140 ball bilan qaysi OTMga kirsam bo'ladi?",
-  "TATU Dasturiy injiniring ballari qancha?",
-  "DTM testida maksimal necha ball to'plash mumkin?",
-  "Admin bilan qanday bog'lansa bo'ladi?",
+  `${DATA_YEAR}-yil o'tish ballari`,
+  "140 bilan qaysi OTM?",
+  "TATU Dasturiy injiniring",
+  "DTM necha ball?",
 ];
 
 export function AiChatbot() {
@@ -51,15 +36,12 @@ export function AiChatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    if (isOpen && !isMinimized) {
-      scrollToBottom();
-    }
+    if (isOpen && !isMinimized) scrollToBottom();
   }, [messages, isOpen, isMinimized]);
 
   const handleSendMessage = useCallback(
@@ -99,8 +81,7 @@ export function AiChatbot() {
         }
 
         if (!replyText) {
-          replyText =
-            "Kechirasiz, javob olishda xatolik yuz berdi. Iltimos qaytadan urinib ko'ring yoki admin bilan bog'laning: @unitopuz_support";
+          replyText = "Javob olishda xatolik. Qaytadan urinib ko'ring.";
         }
 
         const assistantMessage: Message = {
@@ -111,13 +92,11 @@ export function AiChatbot() {
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
-      } catch (err) {
-        console.error("Chat error:", err);
+      } catch {
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
-          content:
-            "Server bilan bog'lanishda uzilish bo'ldi. Iltimos, qaytadan yuboring yoki savolingizni adminimizga yo'llang: @unitopuz_support",
+          content: "Server bilan bog'lanishda uzilish. Qaytadan yuboring.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
         setMessages((prev) => [...prev, errorMessage]);
@@ -129,7 +108,6 @@ export function AiChatbot() {
     [input, loading, messages],
   );
 
-  // Listen for global custom open event
   useEffect(() => {
     const handleOpenChat = (e: Event) => {
       const customEvent = e as CustomEvent<{ prompt?: string }>;
@@ -156,34 +134,18 @@ export function AiChatbot() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleReset = () => {
-    setMessages([INITIAL_MESSAGE]);
-  };
-
   return (
     <>
-      {/* Floating Toggle Button */}
+      {/* Floating Button */}
       {!isOpen && (
         <div className="fixed bottom-20 md:bottom-6 right-4 z-40">
           <button
-            id="unitop-ai-launcher-btn"
             onClick={() => setIsOpen(true)}
-            aria-label="UniTop AI Maslahatchisi"
-            className="group relative flex items-center gap-2.5 rounded-full bg-navy px-4 py-3 text-white shadow-xl shadow-navy/30 transition-all duration-300 hover:scale-105 hover:bg-navy/95 focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            aria-label="AI Yordamchi"
+            className="group flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-white shadow-lg transition-all hover:bg-slate-800 hover:shadow-xl dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
           >
-            <span className="relative flex size-6 items-center justify-center">
-              <Bot className="size-5 transition-transform group-hover:rotate-12" />
-              <span className="absolute -top-1 -right-1 size-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="absolute -top-1 -right-1 size-2 rounded-full bg-emerald-400" />
-            </span>
-            <div className="flex flex-col items-start pr-1 text-left">
-              <span className="text-xs font-bold leading-none tracking-tight flex items-center gap-1">
-                UniTop AI <Sparkles className="size-3 text-amber-300 fill-amber-300" />
-              </span>
-              <span className="text-[10px] text-white/75 font-normal leading-tight">
-                Savollarga javoblar
-              </span>
-            </div>
+            <Bot className="size-4" />
+            <span className="text-sm font-medium">AI Yordamchi</span>
           </button>
         </div>
       )}
@@ -191,44 +153,37 @@ export function AiChatbot() {
       {/* Chat Window */}
       {isOpen && (
         <div
-          id="unitop-ai-chat-window"
-          className={`fixed z-50 transition-all duration-200 ${
+          className={`fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-all dark:border-slate-800 dark:bg-slate-950 ${
             isMinimized
-              ? "bottom-20 md:bottom-6 right-4 w-72 h-14"
-              : "bottom-16 md:bottom-6 right-0 md:right-6 w-full md:w-[420px] h-[calc(100vh-5rem)] md:h-[620px] max-h-[90vh]"
-          } flex flex-col rounded-t-2xl md:rounded-2xl border border-border/80 bg-background shadow-2xl overflow-hidden`}
+              ? "bottom-20 md:bottom-6 right-4 w-64 h-12"
+              : "bottom-16 md:bottom-6 right-0 md:right-6 w-full md:w-[380px] h-[calc(100vh-5rem)] md:h-[560px] max-h-[85vh]"
+          }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-border/70 bg-navy px-4 py-3 text-white">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-white/10 text-white border border-white/10">
+          <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900">
                 <Bot className="size-4" />
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 font-bold text-sm tracking-tight leading-none text-white">
-                  UniTop AI Maslahatchi
-                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                  UniTop AI
                 </div>
-                <div className="text-[10px] text-white/70 truncate leading-snug mt-0.5">
-                  {DATA_YEAR}-yil o'tish ballari & Universitetlar
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {loading ? "Javob yozmoqda..." : "Onlayn"}
                 </div>
               </div>
             </div>
-
             <div className="flex items-center gap-1">
               <button
-                onClick={handleReset}
-                title="Suhbatni yangilash"
-                aria-label="Suhbatni yangilash"
-                className="rounded-md p-1.5 text-white/80 hover:bg-white/10 hover:text-white transition"
+                onClick={() => setMessages([INITIAL_MESSAGE])}
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
               >
                 <RotateCcw className="size-3.5" />
               </button>
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
-                title={isMinimized ? "Kengaytirish" : "Kichraytirish"}
-                aria-label={isMinimized ? "Kengaytirish" : "Kichraytirish"}
-                className="rounded-md p-1.5 text-white/80 hover:bg-white/10 hover:text-white transition"
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
               >
                 <ChevronDown
                   className={`size-4 transition-transform ${isMinimized ? "rotate-180" : ""}`}
@@ -236,9 +191,7 @@ export function AiChatbot() {
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                title="Yopish"
-                aria-label="Yopish"
-                className="rounded-md p-1.5 text-white/80 hover:bg-white/10 hover:text-white transition"
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
               >
                 <X className="size-4" />
               </button>
@@ -247,63 +200,58 @@ export function AiChatbot() {
 
           {!isMinimized && (
             <>
-              {/* Messages Body */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+                      <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                         <Bot className="size-3.5" />
                       </div>
                     )}
-
-                    <div
-                      className={`group relative max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-br-xs"
-                          : "bg-muted/70 text-foreground border border-border/70 rounded-bl-xs"
-                      }`}
-                    >
-                      <div className="markdown-body select-text">
+                    <div className="group relative max-w-[80%]">
+                      <div
+                        className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                            : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                        }`}
+                      >
                         <Markdown
                           components={{
-                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                            p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
                             ul: ({ children }) => (
-                              <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>
+                              <ul className="list-disc pl-3 mb-1.5 space-y-0.5 text-sm">
+                                {children}
+                              </ul>
                             ),
                             ol: ({ children }) => (
-                              <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>
-                            ),
-                            li: ({ children }) => <li className="mb-0.5">{children}</li>,
-                            strong: ({ children }) => (
-                              <strong className="font-semibold text-foreground">{children}</strong>
-                            ),
-                            a: ({ href, children }) => (
-                              <a
-                                href={href}
-                                target={href?.startsWith("http") ? "_blank" : undefined}
-                                rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-                                className="underline underline-offset-2 font-medium hover:text-primary transition"
-                              >
+                              <ol className="list-decimal pl-3 mb-1.5 space-y-0.5 text-sm">
                                 {children}
-                              </a>
+                              </ol>
+                            ),
+                            strong: ({ children }) => (
+                              <strong className="font-semibold">{children}</strong>
+                            ),
+                            code: ({ children }) => (
+                              <code className="rounded bg-black/10 px-1 py-0.5 text-xs dark:bg-white/10">
+                                {children}
+                              </code>
                             ),
                           }}
                         >
                           {msg.content}
                         </Markdown>
                       </div>
-
-                      <div className="mt-1 flex items-center justify-between gap-2 text-[10px] opacity-60">
+                      <div className="mt-1 flex items-center gap-2 text-[10px] text-slate-400">
                         <span>{msg.timestamp}</span>
                         {msg.role === "assistant" && (
                           <button
                             onClick={() => handleCopy(msg.id, msg.content)}
-                            title="Nusxalash"
-                            className="opacity-0 group-hover:opacity-100 transition p-0.5 hover:text-foreground"
+                            className="opacity-0 group-hover:opacity-100 transition"
                           >
                             {copiedId === msg.id ? (
                               <Check className="size-3 text-emerald-500" />
@@ -318,32 +266,28 @@ export function AiChatbot() {
                 ))}
 
                 {loading && (
-                  <div className="flex gap-2.5 justify-start">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
-                      <Bot className="size-3.5" />
+                  <div className="flex gap-2">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
+                      <Bot className="size-3.5 text-slate-400" />
                     </div>
-                    <div className="rounded-2xl rounded-bl-xs bg-muted/70 border border-border/70 px-4 py-3 text-sm text-muted-foreground flex items-center gap-2">
-                      <Loader2 className="size-3.5 animate-spin text-primary" />
-                      <span>UniTop AI o'ylamoqda...</span>
+                    <div className="flex items-center gap-1.5 rounded-2xl bg-slate-100 px-3.5 py-2.5 text-sm text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                      <Loader2 className="size-3 animate-spin" />
+                      <span>O'ylamoqda...</span>
                     </div>
                   </div>
                 )}
-
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Quick Prompts Suggestions */}
+              {/* Quick Prompts */}
               {messages.length <= 2 && (
-                <div className="border-t border-border/50 bg-secondary/30 px-3 py-2">
-                  <div className="text-[11px] font-medium text-muted-foreground mb-1.5 flex items-center gap-1">
-                    <Sparkles className="size-3 text-primary" /> Tezkor savollar:
-                  </div>
-                  <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                <div className="border-t border-slate-100 px-4 py-2.5 dark:border-slate-800">
+                  <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
                     {QUICK_PROMPTS.map((prompt, idx) => (
                       <button
                         key={idx}
                         onClick={() => handleSendMessage(prompt)}
-                        className="shrink-0 rounded-full border border-border/80 bg-background px-2.5 py-1 text-[11px] text-foreground hover:border-primary hover:bg-primary/5 transition"
+                        className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-600"
                       >
                         {prompt}
                       </button>
@@ -352,8 +296,8 @@ export function AiChatbot() {
                 </div>
               )}
 
-              {/* Input Footer */}
-              <div className="border-t border-border/80 bg-card p-3">
+              {/* Input */}
+              <div className="border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -367,16 +311,15 @@ export function AiChatbot() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Savolingizni yozing..."
+                    placeholder="Savol yozing..."
                     disabled={loading}
-                    className="flex-1 max-h-28 min-h-[40px] resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-primary disabled:opacity-50"
+                    className="flex-1 max-h-24 min-h-[36px] resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-white"
                   />
                   <Button
                     type="submit"
                     size="icon"
                     disabled={!input.trim() || loading}
-                    className="size-10 shrink-0 rounded-xl"
-                    aria-label="Yuborish"
+                    className="size-9 shrink-0 rounded-xl bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                   >
                     {loading ? (
                       <Loader2 className="size-4 animate-spin" />
@@ -385,19 +328,8 @@ export function AiChatbot() {
                     )}
                   </Button>
                 </form>
-
-                <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Sparkles className="size-2.5 text-primary" /> Gemini AI bilan quvvatlangan
-                  </span>
-                  <a
-                    href="https://t.me/unitopuz_support"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline hover:text-foreground"
-                  >
-                    Admin: @unitopuz_support
-                  </a>
+                <div className="mt-1.5 text-center text-[10px] text-slate-400">
+                  Gemini AI bilan quvvatlangan
                 </div>
               </div>
             </>

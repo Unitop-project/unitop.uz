@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="95" fill="#8B0000"/>
+  <circle cx="100" cy="100" r="85" fill="white"/>
+  <text x="100" y="80" font-family="Arial" font-size="12" font-weight="bold" fill="#8B0000" text-anchor="middle">WIUT</text>
+  <text x="100" y="110" font-family="Arial" font-size="8" fill="#8B0000" text-anchor="middle">Toshkent</text>
+  <text x="100" y="130" font-family="Arial" font-size="8" fill="#8B0000" text-anchor="middle">1992</text>
+</svg>

@@ -11,14 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalculatorRouteImport } from './routes/calculator'
-import { Route as MaterialsRouteImport } from './routes/materials'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as ResultsRouteImport } from './routes/results'
-import { Route as TestsIndexRouteImport } from './routes/tests.index'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as UniversitiesIndexRouteImport } from './routes/universities.index'
 import { Route as UniversitiesIdRouteImport } from './routes/universities.$id'
-import { Route as TestsSubjectIndexRouteImport } from './routes/tests.$subject.index'
-import { Route as TestsSubjectRunRouteImport } from './routes/tests.$subject.run'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,9 +29,14 @@ const CalculatorRoute = CalculatorRouteImport.update({
   path: '/calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MaterialsRoute = MaterialsRouteImport.update({
-  id: '/materials',
-  path: '/materials',
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgramsRoute = ProgramsRouteImport.update({
@@ -45,9 +49,9 @@ const ResultsRoute = ResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TestsIndexRoute = TestsIndexRouteImport.update({
-  id: '/tests/',
-  path: '/tests/',
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UniversitiesIndexRoute = UniversitiesIndexRouteImport.update({
@@ -60,104 +64,87 @@ const UniversitiesIdRoute = UniversitiesIdRouteImport.update({
   path: '/universities/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TestsSubjectIndexRoute = TestsSubjectIndexRouteImport.update({
-  id: '/tests/$subject/',
-  path: '/tests/$subject/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestsSubjectRunRoute = TestsSubjectRunRouteImport.update({
-  id: '/tests/$subject/run',
-  path: '/tests/$subject/run',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
-  '/materials': typeof MaterialsRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
   '/programs': typeof ProgramsRoute
   '/results': typeof ResultsRoute
+  '/roadmap': typeof RoadmapRoute
   '/universities/$id': typeof UniversitiesIdRoute
-  '/tests/': typeof TestsIndexRoute
   '/universities/': typeof UniversitiesIndexRoute
-  '/tests/$subject/run': typeof TestsSubjectRunRoute
-  '/tests/$subject/': typeof TestsSubjectIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
-  '/materials': typeof MaterialsRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
   '/programs': typeof ProgramsRoute
   '/results': typeof ResultsRoute
+  '/roadmap': typeof RoadmapRoute
   '/universities/$id': typeof UniversitiesIdRoute
-  '/tests': typeof TestsIndexRoute
   '/universities': typeof UniversitiesIndexRoute
-  '/tests/$subject/run': typeof TestsSubjectRunRoute
-  '/tests/$subject': typeof TestsSubjectIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
-  '/materials': typeof MaterialsRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
   '/programs': typeof ProgramsRoute
   '/results': typeof ResultsRoute
+  '/roadmap': typeof RoadmapRoute
   '/universities/$id': typeof UniversitiesIdRoute
-  '/tests/': typeof TestsIndexRoute
   '/universities/': typeof UniversitiesIndexRoute
-  '/tests/$subject/run': typeof TestsSubjectRunRoute
-  '/tests/$subject/': typeof TestsSubjectIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/calculator'
-    | '/materials'
+    | '/dashboard'
+    | '/login'
     | '/programs'
     | '/results'
+    | '/roadmap'
     | '/universities/$id'
-    | '/tests/'
     | '/universities/'
-    | '/tests/$subject/run'
-    | '/tests/$subject/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/calculator'
-    | '/materials'
+    | '/dashboard'
+    | '/login'
     | '/programs'
     | '/results'
+    | '/roadmap'
     | '/universities/$id'
-    | '/tests'
     | '/universities'
-    | '/tests/$subject/run'
-    | '/tests/$subject'
   id:
     | '__root__'
     | '/'
     | '/calculator'
-    | '/materials'
+    | '/dashboard'
+    | '/login'
     | '/programs'
     | '/results'
+    | '/roadmap'
     | '/universities/$id'
-    | '/tests/'
     | '/universities/'
-    | '/tests/$subject/run'
-    | '/tests/$subject/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalculatorRoute: typeof CalculatorRoute
-  MaterialsRoute: typeof MaterialsRoute
+  DashboardRoute: typeof DashboardRoute
+  LoginRoute: typeof LoginRoute
   ProgramsRoute: typeof ProgramsRoute
   ResultsRoute: typeof ResultsRoute
+  RoadmapRoute: typeof RoadmapRoute
   UniversitiesIdRoute: typeof UniversitiesIdRoute
-  TestsIndexRoute: typeof TestsIndexRoute
   UniversitiesIndexRoute: typeof UniversitiesIndexRoute
-  TestsSubjectRunRoute: typeof TestsSubjectRunRoute
-  TestsSubjectIndexRoute: typeof TestsSubjectIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -176,11 +163,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/materials': {
-      id: '/materials'
-      path: '/materials'
-      fullPath: '/materials'
-      preLoaderRoute: typeof MaterialsRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/programs': {
@@ -197,11 +191,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tests/': {
-      id: '/tests/'
-      path: '/tests'
-      fullPath: '/tests/'
-      preLoaderRoute: typeof TestsIndexRouteImport
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/universities/': {
@@ -218,34 +212,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UniversitiesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tests/$subject/': {
-      id: '/tests/$subject/'
-      path: '/tests/$subject'
-      fullPath: '/tests/$subject/'
-      preLoaderRoute: typeof TestsSubjectIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tests/$subject/run': {
-      id: '/tests/$subject/run'
-      path: '/tests/$subject/run'
-      fullPath: '/tests/$subject/run'
-      preLoaderRoute: typeof TestsSubjectRunRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalculatorRoute: CalculatorRoute,
-  MaterialsRoute: MaterialsRoute,
+  DashboardRoute: DashboardRoute,
+  LoginRoute: LoginRoute,
   ProgramsRoute: ProgramsRoute,
   ResultsRoute: ResultsRoute,
+  RoadmapRoute: RoadmapRoute,
   UniversitiesIdRoute: UniversitiesIdRoute,
-  TestsIndexRoute: TestsIndexRoute,
   UniversitiesIndexRoute: UniversitiesIndexRoute,
-  TestsSubjectRunRoute: TestsSubjectRunRoute,
-  TestsSubjectIndexRoute: TestsSubjectIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
