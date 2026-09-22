@@ -1,9 +1,8 @@
 services:
   - type: web
     name: unitopuz
-    runtime: node
-    buildCommand: npm install && npm run build
-    startCommand: node start.mjs
+    runtime: docker
+    dockerfilePath: Dockerfile
     envVars:
       - key: NITRO_PRESET
         value: node-server

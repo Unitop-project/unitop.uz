@@ -1,0 +1,9 @@
+node_modules
+.output
+.git
+.gitignore
+*.md
+.wrangler
+.tanstack
+.vscode
+.idea
